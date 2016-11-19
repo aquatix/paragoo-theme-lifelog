@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+
+  <!-- Chrome, Firefox OS and Opera -->
+  <meta name="theme-color" content="#ff9800" />
+  <!-- Windows Phone -->
+  <meta name="msapplication-navbutton-color" content="#ff9800">
+  <!-- iOS Safari -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <title>{% block title %}{{ page.title }}{% endblock %} - {{ site.title }}</title>
+
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Roboto+Mono&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+  <link href="/css/style.css" type="text/css" rel="stylesheet" media="screen"/>
+{% for cssfile in site_css %}
+  <link href="{{ cssfile }}" rel="stylesheet">
+{% endfor %}
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/tomorrow-night.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+<body>
+{% if mobiletoggle == false %}
+{% set pageclass = " bigmenu" %}
+{% endif %}
+  <header class="{{ pageclass }}">
+  <nav class="NAV_COLOUR" role="navigation">
+      <div class="nav-wrapper container"><a id="logo-container" href="/" class="brand-logo">{{ logo }}</a>
+{% block navbar %}
+{% if mobiletoggle != false %}
+{% set active_page = active_page|default('index') -%}
+      <ul class="right hide-on-med-and-down">
+        {% for section_href, section_id, section_caption, section_hassub, navbar_section in navbar %}
+        {% if section_hassub == true %}
+        <li{% if section_id == active_section %} class="active"{% endif %}>
+          <a href="{{ section_href|e }}">{{ section_caption }}</a>
+          <!--
+          <ul>
+            {% for href, id, caption in navbar_section %}
+            <li{% if section_id == active_section and id == active_page %} class="active"{% endif %}><a href="{{ href|e }}">{{ caption }}</a></li>
+            {% endfor %}
+          </ul>
+          -->
+        </li>
+        {% else %}
+        <li{% if section_id == active_section %} class="active"{% endif %}>
+          <a href="{{ section_href|e }}">{{ section_caption }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+      </ul>
+
+      <ul id="nav-mobile" class="side-nav">
+{% else %}
+      <ul id="nav-mobile" class="side-nav fixed">
+{% endif %}
+        {% for section_href, section_id, section_caption, section_hassub, navbar_section in navbar %}
+        {% if section_hassub == true %}
+        <li class="no-padding">
+          <ul class="collapsible collapsible-accordion">
+              <li class="bold"><a class="collapsible-header waves-effect waves-NAV_COLOUR{% if section_id == active_section %} active{% endif %}">{{ section_caption }}</a>
+                <div class="collapsible-body">
+                    <ul>
+                        <!--<li><a href="{{ section_href|e }}">{{ section_caption }}</a>-->
+                    {% for href, id, caption in navbar_section %}
+                        {% if href != section_href %}
+                        <li{% if section_id == active_section and id == active_page %} class="active"{% endif %}><a href="{{ href|e }}">{{ caption }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    </ul>
+                </div>
+            </li>
+          </ul>
+        </li>
+        {% else %}
+        <li class="bold{% if section_id == active_section %} active{% endif %}">
+          <a href="{{ section_href|e }}">{{ section_caption }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+      </ul>
+      <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+    </div>
+  </nav>
+{% endblock %}
+{% block body %}
+  </header>
+  <main class="{{ pageclass}}">
+{% if show_title == True %}
+<div class="container">
+    {% if page.title is not none %}
+<h1 class="header HEADER_ALIGN HEADER_TEXT">{{ page.title }}</h1>
+    {% endif %}
+{% endif %}
+
+{{ htmlbody }}
+
+{% if show_title == True %}
+</div>
+{% endif %}
+{% endblock %}
+
+  </main>
+  <footer class="page-footer FOOTER_COLOUR{{ pageclass }}">
+    <div class="container">
+      <div class="row">
+        <div class="col l6 s12">
+            <h5 class="white-text">{{ about_title }}</h5>
+            <p class="FOOTER_TEXT">{{ about }}</p>
+
+
+        </div>
+        {% for blockname in linkblocks %}
+            <div class="col l3 s12">
+              <h5 class="LINKLIST_TEXT">{{ linkblocks[blockname]['title'] }}</h5>
+              <ul>
+              {% for link in linkblocks[blockname]['links'] %}
+                <li><a class="LINK_TEXT" href="{{ linkblocks[blockname]['links'][link]['url'] }}">{{ linkblocks[blockname]['links'][link]['title'] }}</a></li>
+              {% endfor %}
+              </ul>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+          {{ footer }}
+      </div>
+    </div>
+  </footer>
+
+  {% if googleanalytics %}
+  <!-- Google Analytics -->
+  <script>
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', '{{ googleanalytics }}']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  <!-- End Google Analytics -->
+  {% endif %}
+  {% if piwikurl %}
+  <!-- Piwik -->
+  <script type="text/javascript">
+    var _paq = _paq || [];
+    _paq.push(["setDomains", ["{{ piwikdomains }}"]]);
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    (function() {
+      var u="{{ piwikurl }}";
+      _paq.push(['setTrackerUrl', u+'piwik.php']);
+      _paq.push(['setSiteId', 1]);
+      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+      g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+    })();
+  </script>
+  <noscript><p><img src="{{ piwikurl }}/piwik.php?idsite={{ piwikid }}" style="border:0;" alt="" /></p></noscript>
+  <!-- End Piwik Code -->
+  {% endif %}
+
+  </body>
+</html>

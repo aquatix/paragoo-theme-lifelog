@@ -1,0 +1,12 @@
+<div class="androidapp">
+    <h2>{{ title }}</h2>
+    {% if notes is defined %}
+    <p>{{ notes }}</p>
+    {% endif %}
+    <div class="description">
+        {{ description }}
+    </div>
+    <div class="link">
+        <p><a href="{{ url }}">PlayStore</a></p>
+    </div>
+</div>
